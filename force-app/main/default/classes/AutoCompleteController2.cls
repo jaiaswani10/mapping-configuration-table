@@ -1,19 +1,19 @@
-public with sharing class AutoCompleteController {    
+public with sharing class AutoCompleteController2 {    
     @AuraEnabled (cacheable=true)
-    public static List<ObjectWrapper> getObjectNames(String awObjectName) {
+    public static List<ObjectWrapper> getObjectNames() {
         Map<String, List<String>> awObjectMapping = new Map<String, List<String>>();
               
         awObjectMapping = new Map<String ,List<String>> {
-            'profile' => new List<String>{'Account', 'Contact', 'Person Account'},
+            'profile' => new List<String>{'Account', 'Contact', 'PersonAccount'},
             'employment' => new List<String>{'Account', 'Custom', 'childsOfAccount'}
         };
 
         List<ObjectWrapper> listOfObjects = new List<ObjectWrapper>();
         Integer uniqueKeyGen = 1;
-        List<String> objectsNeeded = awObjectMapping.get(awObjectName.toLowerCase());
+        //List<String> objectsNeeded = awObjectMapping.get(awObjectName.toLowerCase());
         
         for(Schema.SObjectType objTyp : Schema.getGlobalDescribe().Values()){
-            if(objectsNeeded.contains(objTyp.getDescribe().getName()) && supportedObjects.contains(objTyp.getDescribe().getName()) && objTyp.getDescribe().isUpdateable() && objTyp.getDescribe().isAccessible() && objTyp.getDescribe().isCreateable() && objTyp.getDescribe().isSearchable() && objTyp.getDescribe().isQueryable()){
+            if(supportedObjects.contains(objTyp.getDescribe().getName()) && objTyp.getDescribe().isUpdateable() && objTyp.getDescribe().isAccessible() && objTyp.getDescribe().isCreateable() && objTyp.getDescribe().isSearchable() && objTyp.getDescribe().isQueryable()){
                 listOfObjects.add(new ObjectWrapper(objTyp.getDescribe().getName(),objTyp.getDescribe().getLabel(),uniqueKeyGen));
                 uniqueKeyGen++; 
             }

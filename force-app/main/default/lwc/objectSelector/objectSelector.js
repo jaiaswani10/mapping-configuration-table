@@ -1,23 +1,34 @@
-import { LightningElement, api } from 'lwc';
+import { LightningElement, wire, api } from 'lwc';
 import getObjectNames from '@salesforce/apex/AutoCompleteController.getObjectNames';
 
-export default class ObjectSelector extends LightningElement {        
+export default class ObjectSelector extends LightningElement {     
+
     @api disabled;
     @api selectedValue;
+    @api objectsNeeded;
 
     objectName;
     dataList;
     value;
     
-    
-
-    connectedCallback() {
-        getObjectNames()
-            .then(result => {
-                this.dataList = result;
-            })
-            .catch(error => this.handleError(error));
+    @wire(getObjectNames, {'awObjectName': '$objectsNeeded'})
+    wiredGetObjectNames({ error, data }) {
+        if (data) {
+            this.dataList = data;
+            this.error = undefined;
+        } else if (error) {
+            this.handleError(error)
+            this.dataList = undefined;
+        }
     }
+
+    // connectedCallback() {
+    //     getObjectNames(objectsNeeded)
+    //         .then(result => {
+    //             this.dataList = result;
+    //         })
+    //         .catch(error => this.handleError(error));
+    // }
 
     
     setValue(event) {        

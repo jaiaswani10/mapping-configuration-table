@@ -1,4 +1,5 @@
 import { LightningElement, api } from 'lwc';
+import { getObjectInfo } from 'lightning/uiObjectInfoApi';
 
 export default class AutocompleteCombobox extends LightningElement {
     @api listOfData;
@@ -15,12 +16,10 @@ export default class AutocompleteCombobox extends LightningElement {
 
     @api 
     get selectedValue() {
-        
         return this.selectedOption.label;
     };
 
     set selectedValue(value) {
-        console.log(this.selectedOption.label);
         // console.log('SF Object Value', value);
         this.selectedOption.label = value;
     }

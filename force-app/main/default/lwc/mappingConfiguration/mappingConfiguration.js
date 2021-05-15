@@ -1,4 +1,4 @@
-import { LightningElement, track } from 'lwc';
+import { LightningElement, track, wire } from 'lwc';
 import { createRecord } from 'lightning/uiRecordApi';
 import MAPPING_CONFIGURATION from '@salesforce/schema/Mapping_Configuration__c';
 import AW_FIELD from '@salesforce/schema/Mapping_Configuration__c.AW_Field__c';
@@ -14,31 +14,45 @@ import { refreshApex } from '@salesforce/apex';
 
 export default class MappingConfiguration extends LightningElement {
 
-    @track mappingConfigurations = [
-        {
-            index: "0", Salesforce_Object__c: "",
-            AW_Object__c: "", AW_Field__c: "",
-            Salesforce_Field__c: "", Id: "",
-            showEditButton: false, showSaveButton: true,
-            disabled: false
-        }];
+    @track mappingConfigurations = [];
+        // [{
+        //     index: "0", Salesforce_Object__c: "",
+        //     AW_Object__c: "", AW_Field__c: "",
+        //     Salesforce_Field__c: "", Id: "",
+        //     showEditButton: false, showSaveButton: true,
+        //     disabled: false
+        // }];
 
     mappingConfMetaMap = new Map();
-
+    isLoading = true;
+    _pageIndex = 0;
     cofigTablePageNames = ['Profile', 'Employment'];
 
-    pageName = this.cofigTablePageNames[0];
+    hasNextPageAvailable = this._pageIndex < this.cofigTablePageNames.length;
+    hasPreviousPageAvailable = false;
 
-    connectedCallback() {               
-        getMappingConfigurations(this.pageName)
-            .then(result => this.handleMappingConfigurations(result))
-            .then(result => this.handleMetadataMappingConfigurations(result))
-            .catch(error => console.log(error));
-       
-        console.log(this.mappingConfMetaMap);
+    
+    pageName = this.cofigTablePageNames[this._pageIndex];
+    
+
+    @wire(getMappingConfigurations, { 'awObjectName': '$pageName' })
+    wiredMappingConfigs({ error, data }) {        
+        this.isLoading = true;
+        if (data) {
+            this.handleMappingConfigurations(data);
+        }
+        if ((!data && !error) || data) {
+            getMappingConfigurationsMetadata({ 'awObjectName': this.pageName })
+            .then(result =>{ this.handleMetadataMappingConfigurations(result);  this.isLoading = false;})
+            .catch(error => {console.log(error);  this.isLoading = false});           
+        }                                          
+         else if (error) {            
+            this.mappingConfigurations = undefined;
+            this.isLoading = false;
+        }
     }
-
-    setValue(event) {       
+    
+    setValue(event) {
         let index = event.currentTarget.dataset.index;
         let fieldName = event.currentTarget.dataset.fieldName;
         let selectedObjectMeta = JSON.parse(event.detail);
@@ -47,7 +61,7 @@ export default class MappingConfiguration extends LightningElement {
 
         if (fieldName == 'Salesforce_Object__c') {
             this.mappingConfigurations[index]['Salesforce_Field__c'] = '';
-        }        
+        }
     }
 
     editMapping(event) {
@@ -60,6 +74,7 @@ export default class MappingConfiguration extends LightningElement {
     }
 
     saveMapping(event) {
+        this.isLoading = true;
         let index = event.currentTarget.dataset.index;
 
         let mappingConfigurationRecord = this.mappingConfigurations[index];
@@ -92,6 +107,7 @@ export default class MappingConfiguration extends LightningElement {
     }
 
     errorHandler(error, context) {
+        this.isLoading = false;
         context.dispatchEvent(
             new ShowToastEvent({
                 title: 'Error creating record',
@@ -108,7 +124,7 @@ export default class MappingConfiguration extends LightningElement {
         mappingConfigurationRecord.disabled = true;
 
         refreshApex(this.mappingConfigurations);
-
+        this.isLoading = false;
         this.dispatchEvent(
             new ShowToastEvent({
                 title: 'Success',
@@ -125,53 +141,76 @@ export default class MappingConfiguration extends LightningElement {
         this.mappingConfigurations[index][fieldName] = value;
     }
 
-    handleMappingConfigurations(mappingConfigurations) {        
-        mappingConfigurations.map((mapConf, index) => {
-            let { AW_Field__c, AW_Object__c, Salesforce_Field__c, Salesforce_Object__c, Id } = mapConf;
-            let metaConfigWrap;
-            metaConfigWrap = {
-                Id,
-                index,
-                AW_Field__c,
-                AW_Object__c,
-                Salesforce_Field__c,
-                Salesforce_Object__c,
-                showEditButton: true,
-                showSaveButton: false,
-                disabled: true
-            };
+    handleMappingConfigurations(mappingConfigurationsRes) {
+        if (mappingConfigurationsRes) {
+            mappingConfigurationsRes.map((mapConf, index) => {
+                let { AW_Field__c, AW_Object__c, Salesforce_Field__c, Salesforce_Object__c, Id } = mapConf;                
+                let metaConfigWrap;
+                metaConfigWrap = {
+                    Id,
+                    index,
+                    AW_Field__c,
+                    AW_Object__c,
+                    Salesforce_Field__c,
+                    Salesforce_Object__c,
+                    showEditButton: true,
+                    showSaveButton: false,
+                    disabled: true
+                };
 
-            this.mappingConfMetaMap.set(AW_Object__c + AW_Field__c, metaConfigWrap);
-            return metaConfigWrap;
+                this.mappingConfMetaMap.set(AW_Object__c + AW_Field__c, metaConfigWrap);
+                return metaConfigWrap;
+            })
+        }
 
-        })
-        console.log(this.mappingConfMetaMap);
-        return getMappingConfigurationsMetadata(this.pageName);
+        console.log(this.mappingConfMetaMap);        
     }
 
     handleMetadataMappingConfigurations(mappingConfigurationsRes) {
-        this.mappingConfigurations = [];
-
+      
         this.mappingConfigurations = mappingConfigurationsRes.map((mapConf, index) => {
             let { AW_Field__c, AW_Object__c } = mapConf;
             let mapConfMeta;
+                       
             if (this.mappingConfMetaMap.has(AW_Object__c + AW_Field__c)) {
                 mapConfMeta = this.mappingConfMetaMap.get(AW_Object__c + AW_Field__c)
             }
             else {
                 mapConfMeta = {
-                    id: '',
-                    index,
+                    id: '',                    
                     AW_Field__c,
                     AW_Object__c,
                     Salesforce_Field__c: '',
                     Salesforce_Object__c: '',
                     showEditButton: false,
                     showSaveButton: true,
-                    disabled: false
+                    disabled: false,                    
                 };
             }
+            mapConfMeta.index = index;
+            mapConfMeta.sno = index + 1;
             return mapConfMeta;
         });
+    }
+
+    nextPage() {
+        
+        this._pageIndex += 1;        
+        if(this.cofigTablePageNames.length > this._pageIndex && this.cofigTablePageNames[this._pageIndex]) {
+            this.isLoading = true;
+            this.pageName = this.cofigTablePageNames[this._pageIndex];
+        } 
+        this.hasNextPageAvailable = this._pageIndex < this.cofigTablePageNames.length - 1;
+        this.hasPreviousPageAvailable = this._pageIndex > 0 && this._pageIndex < this.cofigTablePageNames.length;       
+    }
+
+    previousPage() {        
+        this._pageIndex -= 1;        
+        if(this.cofigTablePageNames.length > this._pageIndex && this.cofigTablePageNames[this._pageIndex]) {
+            this.isLoading = true;
+            this.pageName = this.cofigTablePageNames[this._pageIndex];
+        }
+        this.hasNextPageAvailable = this._pageIndex < this.cofigTablePageNames.length - 1;
+        this.hasPreviousPageAvailable = this._pageIndex > 0 && this._pageIndex < this.cofigTablePageNames.length;
     }
 }
