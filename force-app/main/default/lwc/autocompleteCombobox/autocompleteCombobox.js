@@ -19,8 +19,7 @@ export default class AutocompleteCombobox extends LightningElement {
         return this.selectedOption.label;
     };
 
-    set selectedValue(value) {
-        console.log(this.selectedOption.label);
+    set selectedValue(value) {        
         // console.log('SF Object Value', value);
         this.selectedOption.label = value;
     }

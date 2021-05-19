@@ -1,77 +1,81 @@
 <template>
     <lightning-card title="Advisor CRM - SF Mapping Configuration">
-        <br />
-        <div class="slds-scope">
-            <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered">
-                <thead>
-                    <tr class="slds-line-height_reset">
-                        <th class="" scope="col">
-                            <div class="slds-truncate" title="New Value">Serial No.</div>
-                        </th>
-                        <th class="" scope="col">
-                            <div class="slds-truncate" title="New Value">AW Object</div>
-                        </th>
-                        <th class="" scope="col">
-                            <div class="slds-truncate" title="New Value">AW Field</div>
-                        </th>
-                        <th class="" scope="col">
-                            <div class="slds-truncate" title="Attribute/Field">Salesforce Object</div>
-                        </th>
-                        <th class="" scope="col">
-                            <div class="slds-truncate" title="Old Value">Salesforce Field</div>
-                        </th>
+        <template if:true={isLoading}>
+            <lightning-spinner alternative-text="Loading" size="large"></lightning-spinner>
+        </template>
+        <template if:true={mappingConfigurations}>
+            <div class="slds-scope">
+                <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered">
+                    <thead>
+                        <tr class="slds-line-height_reset">
+                            <th class="" scope="col">
+                                <div class="slds-truncate" title="New Value">Serial No.</div>
+                            </th>
+                            <th class="" scope="col">
+                                <div class="slds-truncate" title="New Value">AW Object</div>
+                            </th>
+                            <th class="" scope="col">
+                                <div class="slds-truncate" title="New Value">AW Field</div>
+                            </th>
+                            <th class="" scope="col">
+                                <div class="slds-truncate" title="Attribute/Field">Salesforce Object</div>
+                            </th>
+                            <th class="" scope="col">
+                                <div class="slds-truncate" title="Old Value">Salesforce Field</div>
+                            </th>
 
-                        <th class="" scope="col">
+                            <!-- <th class="" scope="col">
                             <div class="slds-truncate" title="New Value">Action</div>
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <template if:true={mappingConfigurations}>
-                        <template for:each={mappingConfigurations} for:item="configRec">
-                            <tr class="slds-hint-parent" key={configRec.index} if:true={configRec.disabled}>
-                                <td>
-                                    <div class="slds-truncate">
-                                        {configRec.sno}
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="slds-truncate">
-                                        <lightning-input type="text" data-index={configRec.index}
-                                            data-field-name="AW_Object__c" onchange={setFieldValue}
-                                            value={configRec.AW_Object__c} variant="label-hidden" disabled>
-                                        </lightning-input>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="slds-truncate">
-                                        <lightning-input type="text" variant="label-hidden" data-index={configRec.index}
-                                            data-field-name="AW_Field__c" onchange={setFieldValue}
-                                            value={configRec.AW_Field__c} disabled></lightning-input>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div>
-                                        <c-object-Selector2 onobjectselected={setValue} data-index={configRec.index}
-                                            data-field-name="Salesforce_Object__c"
-                                            selected-value={configRec.Salesforce_Object__c} disabled>
-                                        </c-object-Selector2>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div>
-                                        <c-field-Selector2 disabled onfieldselected={setValue}
-                                            data-index={configRec.index} data-field-name="Salesforce_Field__c"
-                                            selected-value={configRec.Salesforce_Field__c}
-                                            selected-object={configRec.Salesforce_Object__c}>
-                                        </c-field-Selector2>
-                                        <!-- <lightning-input type="text" variant="label-hidden" data-index={configRec.index}
+                        </th> -->
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <template if:true={mappingConfigurations}>
+                            <template for:each={mappingConfigurations} for:item="configRec">
+                                <tr class="slds-hint-parent" key={configRec.index} if:true={configRec.disabled}>
+                                    <td>
+                                        <div class="slds-truncate">
+                                            {configRec.sno}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate">
+                                            <lightning-input type="text" data-index={configRec.index}
+                                                data-field-name="AW_Object__c" onchange={setFieldValue}
+                                                value={configRec.AW_Object__c} variant="label-hidden" disabled>
+                                            </lightning-input>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate">
+                                            <lightning-input type="text" variant="label-hidden"
+                                                data-index={configRec.index} data-field-name="AW_Field__c"
+                                                onchange={setFieldValue} value={configRec.AW_Field__c} disabled>
+                                            </lightning-input>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <c-object-Selector2 onobjectselected={setValue} data-index={configRec.index}
+                                                data-field-name="Salesforce_Object__c"
+                                                selected-value={configRec.Salesforce_Object__c} disabled>
+                                            </c-object-Selector2>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <c-field-Selector2 disabled onfieldselected={setValue}
+                                                data-index={configRec.index} data-field-name="Salesforce_Field__c"
+                                                selected-value={configRec.Salesforce_Field__c}
+                                                selected-object={configRec.Salesforce_Object__c}>
+                                            </c-field-Selector2>
+                                            <!-- <lightning-input type="text" variant="label-hidden" data-index={configRec.index}
                                             data-field-name="Salesforce_Field__c" onchange={setFieldValue} value={configRec.Salesforce_Field__c} disabled>
                                         </lightning-input> -->
-                                    </div>
-                                </td>
+                                        </div>
+                                    </td>
 
-                                <td>
+                                    <!-- <td>
                                     <div class="slds-truncate">
                                         <template if:true={configRec.showEditButton}>
                                             <lightning-button variant="brand-outline" label="Edit"
@@ -80,54 +84,55 @@
                                             </lightning-button>
                                         </template>
                                     </div>
-                                </td>
-                            </tr>
+                                </td> -->
+                                </tr>
 
-                            <tr class="slds-hint-parent" key={configRec.index} if:false={configRec.disabled}>
-                                <td>
-                                    <div class="slds-truncate">
-                                        {configRec.sno}
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="slds-truncate">
-                                        <lightning-input type="text" variant="label-hidden" data-index={configRec.index}
-                                            data-field-name="AW_Object__c" onchange={setFieldValue}
-                                            value={configRec.AW_Object__c}></lightning-input>
+                                <tr class="slds-hint-parent" key={configRec.index} if:false={configRec.disabled}>
+                                    <td>
+                                        <div class="slds-truncate">
+                                            {configRec.sno}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate">
+                                            <lightning-input type="text" variant="label-hidden"
+                                                data-index={configRec.index} data-field-name="AW_Object__c"
+                                                onchange={setFieldValue} value={configRec.AW_Object__c}>
+                                            </lightning-input>
                                             <!-- read-only="true" -->
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="slds-truncate">
-                                        <lightning-input type="text" variant="label-hidden" data-index={configRec.index}
-                                            data-field-name="AW_Field__c" onchange={setFieldValue}
-                                            value={configRec.AW_Field__c}  ></lightning-input>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate">
+                                            <lightning-input type="text" variant="label-hidden"
+                                                data-index={configRec.index} data-field-name="AW_Field__c"
+                                                onchange={setFieldValue} value={configRec.AW_Field__c}>
+                                            </lightning-input>
                                             <!-- read-only="true" -->
-                                           
-                                    </div>
-                                </td>
-                                <td>
-                                    <div>
-                                        <c-object-Selector2 onobjectselected={setValue} data-index={configRec.index}
-                                            data-field-name="Salesforce_Object__c"
-                                            selected-value={configRec.Salesforce_Object__c}>
-                                        </c-object-Selector2>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div>
-                                        <c-field-Selector2 onfieldselected={setValue} data-index={configRec.index}
-                                            data-field-name="Salesforce_Field__c"
-                                            selected-value={configRec.Salesforce_Field__c}
-                                            selected-object={configRec.Salesforce_Object__c}>
-                                        </c-field-Selector2>
-                                        <!-- <lightning-input type="text" variant="label-hidden" data-index={configRec.index}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <c-object-Selector2 onobjectselected={setValue} data-index={configRec.index}
+                                                data-field-name="Salesforce_Object__c"
+                                                selected-value={configRec.Salesforce_Object__c}>
+                                            </c-object-Selector2>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <c-field-Selector2 onfieldselected={setValue} data-index={configRec.index}
+                                                data-field-name="Salesforce_Field__c"
+                                                selected-value={configRec.Salesforce_Field__c}
+                                                selected-object={configRec.Salesforce_Object__c}>
+                                            </c-field-Selector2>
+                                            <!-- <lightning-input type="text" variant="label-hidden" data-index={configRec.index}
                                             data-field-name="Salesforce_Field__c" onchange={setFieldValue} value={configRec.Salesforce_Field__c}>
                                         </lightning-input> -->
-                                    </div>
-                                </td>
+                                        </div>
+                                    </td>
 
-                                <td>
+                                    <!-- <td>
                                     <div class="slds-truncate">
                                         <template if:true={configRec.showSaveButton}>
                                             <lightning-button variant="brand-outline" label="Save"
@@ -136,12 +141,23 @@
                                             </lightning-button>
                                         </template>
                                     </div>
-                                </td>
-                            </tr>
+                                </td> -->
+                                </tr>
+                            </template>
                         </template>
-                    </template>
-                </tbody>
-            </table>
-        </div>
+                    </tbody>
+                </table>
+                <div class="slds-docked-form-footer slds-m-top_x-small" style="position: initial;">
+                    <lightning-button variant="brand" label="Save" title="Save All Mapping Record" onclick={saveAll}
+                        class="slds-m-left_x-small">
+                    </lightning-button>
+
+                    <lightning-button variant="brand" label="Edit" title="Edit All Mapping Record" onclick={editAll}
+                        class="slds-m-left_x-small">
+                    </lightning-button>
+
+                </div>
+            </div>
+        </template>
     </lightning-card>
 </template>

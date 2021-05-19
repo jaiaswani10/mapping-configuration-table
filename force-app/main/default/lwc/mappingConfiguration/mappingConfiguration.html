@@ -1,5 +1,5 @@
 <template>
-    <lightning-card title="Advisor CRM - SF Mapping Configuration">
+    <lightning-card title={cardHeading}>
         <template if:true={isLoading}>
             <lightning-spinner alternative-text="Loading" size="large"></lightning-spinner>
         </template>
@@ -23,10 +23,10 @@
                             <th class="" scope="col">
                                 <div class="slds-truncate" title="Old Value">Salesforce Field</div>
                             </th>
-                            
-                            <th class="" scope="col">
+
+                            <!-- <th class="" scope="col">
                                 <div class="slds-truncate" title="New Value">Action</div>
-                            </th>
+                            </th> -->
                         </tr>
                     </thead>
                     <tbody>
@@ -67,13 +67,10 @@
                                             selected-value={configRec.Salesforce_Field__c}
                                             selected-object={configRec.Salesforce_Object__c}>
                                         </c-field-Selector>
-                                        <!-- <lightning-input type="text" variant="label-hidden" data-index={configRec.index}
-                                            data-field-name="Salesforce_Field__c" onchange={setFieldValue} value={configRec.Salesforce_Field__c} disabled>
-                                        </lightning-input> -->
                                     </div>
                                 </td>
-                                
-                                <td>
+
+                                <!-- <td>
                                     <div class="slds-truncate">
                                         <template if:true={configRec.showEditButton}>
                                             <lightning-button variant="brand-outline" label="Edit"
@@ -82,7 +79,7 @@
                                             </lightning-button>
                                         </template>
                                     </div>
-                                </td>
+                                </td> -->
                             </tr>
 
                             <tr class="slds-hint-parent" key={configRec.index} if:false={configRec.disabled}>
@@ -120,13 +117,9 @@
                                             selected-value={configRec.Salesforce_Field__c}
                                             selected-object={configRec.Salesforce_Object__c}>
                                         </c-field-Selector>
-                                        <!-- <lightning-input type="text" variant="label-hidden" data-index={configRec.index}
-                                            data-field-name="Salesforce_Field__c" onchange={setFieldValue} value={configRec.Salesforce_Field__c}>
-                                        </lightning-input> -->
                                     </div>
                                 </td>
-                               
-                                <td>
+                                <!-- <td>
                                     <div class="slds-truncate">
                                         <template if:true={configRec.showSaveButton}>
                                             <lightning-button variant="brand-outline" label="Save"
@@ -135,25 +128,34 @@
                                             </lightning-button>
                                         </template>
                                     </div>
-                                </td>
+                                </td> -->
                             </tr>
                         </template>
                     </tbody>
                 </table>
                 <div class="slds-docked-form-footer slds-m-top_x-small" style="position: initial;">
-                    <!-- <button type="button" class="slds-button slds-button_neutral">Cancel</button> -->
-                    <template if:true={hasNextPageAvailable}>
-                        <button type="button" class="slds-button slds-button_brand" onclick={nextPage}>Next</button>
+                    <!-- <button type="button" class="slds-button slds-button_neutral">Cancel</button> -->                                        
+                    <lightning-button variant="brand" label="Save" title="Save All Mapping Record" onclick={saveAll}
+                        class="slds-m-left_x-small">
+                    </lightning-button>
+                    <template if:true={enableEditAll}>
+                        <lightning-button variant="brand" label="Edit" title="Edit All Mapping Record" onclick={editAll}
+                            class="slds-m-left_x-small">
+                        </lightning-button>
                     </template>
-
                     <template if:true={hasPreviousPageAvailable}>
-                        <button type="button" class="slds-button slds-button_brand"
-                            onclick={previousPage}>Previous</button>
+                        <lightning-button variant="brand" label="Previous" title="Previous page" onclick={previousPage}
+                            class="slds-m-left_x-small">
+                        </lightning-button>
                     </template>
-
+                    <template if:true={hasNextPageAvailable}>
+                        <lightning-button variant="brand" label="Next" title="Next page" onclick={nextPage}
+                            class="slds-m-left_x-small">
+                        </lightning-button>                        
+                    </template>
                 </div>
             </div>
         </template>
     </lightning-card>
-
+  
 </template>

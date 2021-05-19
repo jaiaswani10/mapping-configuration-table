@@ -18,4 +18,15 @@ public with sharing class MappingConfigurationController {
             System.debug(mappingConfigurations);
             return mappingConfigurations;
         }
+
+        @AuraEnabled
+        public static List<Mapping_Configuration__c> saveMappingConfigurations(List<Mapping_Configuration__c> mappingConfigurations) {
+            try {
+                UPSERT mappingConfigurations;
+                return mappingConfigurations;
+            }
+            catch(Exception e) {
+                throw new AuraHandledException(e.getMessage());
+            }            
+        }
 }
