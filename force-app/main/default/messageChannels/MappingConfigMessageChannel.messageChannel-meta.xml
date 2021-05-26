@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningMessageChannel xmlns="http://soap.sforce.com/2006/04/metadata">
+    <masterLabel>MappingConfigMessageChannel</masterLabel>
+    <isExposed>true</isExposed>
+    <description>Used to communicate between Mapping Config Table with History Component</description>
+    <lightningMessageFields>
+        <fieldName>recordId</fieldName>
+        <description>Selected record Id of Mapping Configuration</description>
+    </lightningMessageFields>    
+</LightningMessageChannel>

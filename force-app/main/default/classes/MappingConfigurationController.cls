@@ -29,4 +29,12 @@ public with sharing class MappingConfigurationController {
                 throw new AuraHandledException(e.getMessage());
             }            
         }
+
+        @AuraEnabled (cacheable=true)
+        public static List<Mapping_Configuration__History> getMappingConfigurationsHistory(String mapCofigId) {                    
+            List<Mapping_Configuration__History> mappingConfigurationHistories = new List<Mapping_Configuration__History>();            
+            mappingConfigurationHistories = [SELECT Id, ParentId, CreatedById, CreatedBy.Name, FORMAT(CreatedDate), Field, DataType, OldValue, NewValue FROM Mapping_Configuration__History WHERE ParentId = :mapCofigId ORDER BY CreatedDate DESC];  
+            System.debug(mappingConfigurationHistories);
+            return mappingConfigurationHistories;
+        }
 }

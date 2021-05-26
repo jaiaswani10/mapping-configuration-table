@@ -31,7 +31,7 @@
                     </thead>
                     <tbody>
                         <template for:each={mappingConfigurations} for:item="configRec">
-                            <tr class="slds-hint-parent" key={configRec.index} if:true={configRec.disabled}>
+                            <tr class="slds-hint-parent" key={configRec.index} if:true={configRec.disabled} data-record-id={configRec.Id} onclick={selectRow}>
                                 <td>
                                     <div class="slds-truncate">
                                         {configRec.sno}

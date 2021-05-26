@@ -1,17 +1,21 @@
-import { LightningElement, track, wire } from 'lwc';
-import { createRecord } from 'lightning/uiRecordApi';
-import MAPPING_CONFIGURATION from '@salesforce/schema/Mapping_Configuration__c';
-import AW_FIELD from '@salesforce/schema/Mapping_Configuration__c.AW_Field__c';
-import AW_OBJECT from '@salesforce/schema/Mapping_Configuration__c.AW_Object__c';
-import SF_FIELD from '@salesforce/schema/Mapping_Configuration__c.Salesforce_Field__c';
-import SF_OBJECT from '@salesforce/schema/Mapping_Configuration__c.Salesforce_Object__c';
-import ID_FIELD from '@salesforce/schema/Mapping_Configuration__c.Id';
-import { ShowToastEvent } from 'lightning/platformShowToastEvent';
-import getMappingConfigurations from '@salesforce/apex/MappingConfigurationController.getMappingConfigurations';
-import getMappingConfigurationsMetadata from '@salesforce/apex/MappingConfigurationController.getMappingConfigurationsMetadata';
-import saveMappingConfigurations from '@salesforce/apex/MappingConfigurationController.saveMappingConfigurations';
-import { updateRecord } from 'lightning/uiRecordApi';
-import { refreshApex } from '@salesforce/apex';
+import { LightningElement, track, wire } from 'lwc'
+import { createRecord } from 'lightning/uiRecordApi'
+import MAPPING_CONFIGURATION from '@salesforce/schema/Mapping_Configuration__c'
+import AW_FIELD from '@salesforce/schema/Mapping_Configuration__c.AW_Field__c'
+import AW_OBJECT from '@salesforce/schema/Mapping_Configuration__c.AW_Object__c'
+import SF_FIELD from '@salesforce/schema/Mapping_Configuration__c.Salesforce_Field__c'
+import SF_OBJECT from '@salesforce/schema/Mapping_Configuration__c.Salesforce_Object__c'
+import ID_FIELD from '@salesforce/schema/Mapping_Configuration__c.Id'
+import { ShowToastEvent } from 'lightning/platformShowToastEvent'
+import getMappingConfigurations from '@salesforce/apex/MappingConfigurationController.getMappingConfigurations'
+import getMappingConfigurationsMetadata from '@salesforce/apex/MappingConfigurationController.getMappingConfigurationsMetadata'
+import saveMappingConfigurations from '@salesforce/apex/MappingConfigurationController.saveMappingConfigurations'
+import { updateRecord } from 'lightning/uiRecordApi'
+import { refreshApex } from '@salesforce/apex'
+import mappingConfigMessageChannel from '@salesforce/messageChannel/MappingConfigMessageChannel__c'
+import {publish, MessageContext} from 'lightning/messageService'
+
+
 
 export default class MappingConfiguration extends LightningElement {
 
@@ -40,6 +44,9 @@ export default class MappingConfiguration extends LightningElement {
     cardHeading = this.pageName + " Mapping Configurations";
 
     enableEditAll = true;
+
+    @wire(MessageContext)
+    messageContext;
 
 
     @wire(getMappingConfigurations, { 'awObjectName': '$pageName' })
@@ -291,5 +298,10 @@ export default class MappingConfiguration extends LightningElement {
         mappingConfigurationRecord.showEditButton = false;
         mappingConfigurationRecord.showSaveButton = true;
         mappingConfigurationRecord.disabled = false;
+    }
+
+    selectRow(event) {
+        const recordId = event.currentTarget.dataset.recordId;
+        let res = publish(this.messageContext, mappingConfigMessageChannel, {recordId});        
     }
 }

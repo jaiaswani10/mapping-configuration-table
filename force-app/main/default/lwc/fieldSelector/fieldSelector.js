@@ -35,7 +35,8 @@ export default class FieldSelectorr extends LightningElement {
 
                 if(fieldInfo.updateable == true){
                     let {label, apiName, dataType, referenceToInfos, relationshipName, updateable} = fieldInfo;
-                        
+                       
+                    label = `${label} (${apiName})`;
                     let fieldObj = {label, value: apiName, dataType, referenceToInfos, relationshipName, updateable, 
                         isReference : fieldInfo['dataType'] == 'Reference' ? true : false, 
                         uniqueid: uniqueKey
